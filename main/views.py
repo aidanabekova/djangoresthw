@@ -11,13 +11,13 @@ def get_product(request):
     return Response(data=data)
 
 @api_view(['GET'])
-def get_review(request, id):
+def get_detail(request, id):
     try:
-        review = Review.objects.get(id=id)
-    except Review.DoesNotExist:
+        product = Product.objects.get(id=id)
+    except Product.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND,
-                        data={'error': 'Movie not found!'})
-    data = ReviewSerializer(review).data
+                        data={'error': 'Product not found!'})
+    data = ProductSerializer(product).data
     return Response(data=data)
 
 
