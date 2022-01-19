@@ -1,13 +1,7 @@
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from .models import Category, Tag, Product, Review
-
-
-class CategorySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Category
-        fields = "__all__"
+from .models import Tag, Product, Review
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -28,19 +22,20 @@ class ProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ['id', 'title', 'description', 'price', 'category', 'tags', 'reviews']
+        fields = ['id', 'title', 'description', 'price', 'tags', 'reviews']
 
     def get_tags(self, product):
         return TagSerializer(product.tags.filter(is_active=True), many=True).data
 
 
-class ProductCreateValidateSerializer(serializers.Serializer):
-    title = serializers.CharField(min_length=1, max_length=200)
+class ProductValidateSerializer(serializers.Serializer):
+    title = serializers.CharField(min_length=5, max_length=25)
     description = serializers.CharField()
     price = serializers.IntegerField()
-    category = serializers.IntegerField()
     tags = serializers.ListField()
 
     def validate_title(self, title):
         if Product.objects.filter(title=title):
-            raise ValidationError("This cap already exist!")
+            raise ValidationError("This product already exist!")
+
+#

@@ -1,15 +1,33 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .serializer import ProductSerializer, ReviewSerializer, TagSerializer, ProductCreateValidateSerializer
+from .serializer import ProductSerializer, ReviewSerializer, TagSerializer, ProductValidateSerializer
 from .models import Product, Review, Tag
 
 
-@api_view(['GET'])
+@api_view(['GET', 'POST'])
 def get_product(request):
-    product = Product.objects.all()
-    data = ProductSerializer(product, many=True).data
-    return Response(data=data)
+    if request.method == 'GET':
+        product = Product.objects.all()
+        data = ProductSerializer(product, many=True).data
+        return Response(data=data)
+    elif request.method == 'POST':
+        serializer = ProductValidateSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(status=status.HTTP_406_NOT_ACCEPTABLE,
+                            data={'errors': serializer.errors})
+        title = request.data.get('title', '')
+        description = request.data.get('description', '')
+        price = request.data.get('price', '')
+        tags = request.data.get('tags', '')
+        product = Product.objects.create(
+            title=title, description=description, price=price
+
+        )
+        product.tags.set(tags)
+        return Response(data=ProductSerializer(product).data,
+                        status=status.HTTP_201_CREATED)
+
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
@@ -23,14 +41,15 @@ def get_detail(request, id):
         data = ProductSerializer(product).data
         return Response(data=data)
     elif request.method == 'PUT':
-        serializer = ProductCreateValidateSerializer(data=request.data)
+        serializer = ProductValidateSerializer(data=request.data)
         if not serializer.is_valid():
-            return Response(status=status.HTTP_406_NOT_ACCEPTABLE, data={'message': 'error', 'errors': serializer.errors})
-        product.title = request.data['title']
-        product.description = request.data['description']
-        product.price = request.data['price']
-        product.category_pk = request.data['category']
-        product.tags.set(request.data['tags'])
+            return Response(status=status.HTTP_406_NOT_ACCEPTABLE,
+                            data={'errors': serializer.errors})
+        print('serializer.initial_data - ', serializer.initial_data)
+        product.title = serializer.initial_data['title']
+        product.description = serializer.initial_data['description']
+        product.price = serializer.initial_data['price']
+        product.tags.set(serializer.initial_data['tags'])
         product.save()
         return Response(data={'massage': 'Product updated!'})
     else:
@@ -50,5 +69,3 @@ def get_tags(request):
     tag = Tag.objects.filter(is_active=True)
     data = TagSerializer(tag, many=True).data
     return Response(data=data)
-
-
