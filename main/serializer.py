@@ -38,4 +38,3 @@ class ProductValidateSerializer(serializers.Serializer):
         if Product.objects.filter(title=title):
             raise ValidationError("This product already exist!")
 
-#

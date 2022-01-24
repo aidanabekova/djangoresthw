@@ -1,12 +1,17 @@
+from django.contrib.auth import authenticate
+
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from .serializer import ProductSerializer, ReviewSerializer, TagSerializer, ProductValidateSerializer
 from .models import Product, Review, Tag
+from rest_framework.authtoken.models import Token
+
 
 
 @api_view(['GET', 'POST'])
 def get_product(request):
+    print(request.user)
     if request.method == 'GET':
         product = Product.objects.all()
         data = ProductSerializer(product, many=True).data
@@ -27,7 +32,6 @@ def get_product(request):
         product.tags.set(tags)
         return Response(data=ProductSerializer(product).data,
                         status=status.HTTP_201_CREATED)
-
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
@@ -69,3 +73,10 @@ def get_tags(request):
     tag = Tag.objects.filter(is_active=True)
     data = TagSerializer(tag, many=True).data
     return Response(data=data)
+
+
+
+
+
+
+
