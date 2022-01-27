@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
-from user.models import User
+from django.contrib.auth.models import User
 
 
 class UserRegisterValidateSerializer(serializers.Serializer):
@@ -9,7 +9,7 @@ class UserRegisterValidateSerializer(serializers.Serializer):
 
     def validate_username(self, username):
         users = User.objects.filter(username=username)
-        if users:
+        if users.count():
             raise ValidationError("Such user already exists. Please,change your name!")
         return username
 

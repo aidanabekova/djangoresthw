@@ -13,14 +13,14 @@ class Product(models.Model):
     title = models.CharField(max_length=50)
     description = models.TextField()
     price = models.IntegerField()
-    tags = models.ManyToManyField(Tag)
+    tags = models.ManyToManyField(Tag, related_name='tags')
 
     def __str__(self):
         return self.title
 
 
 class Review(models.Model):
-    text = models.CharField(max_length=100)
+    text = models.CharField(max_length=100, null=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE,
                                 related_name='reviews')
 

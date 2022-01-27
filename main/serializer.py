@@ -18,14 +18,20 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 class ProductSerializer(serializers.ModelSerializer):
     tags = serializers.SerializerMethodField()
-    reviews = ReviewSerializer(many=True)
+    reviews = ReviewSerializer(many=True, required=False)
 
     class Meta:
         model = Product
         fields = ['id', 'title', 'description', 'price', 'tags', 'reviews']
+    def create(self, validated_data):
+
+        return Product.objects.create(**validated_data)
+    def validated_data(self):
 
     def get_tags(self, product):
+
         return TagSerializer(product.tags.filter(is_active=True), many=True).data
+
 
 
 class ProductValidateSerializer(serializers.Serializer):
@@ -37,4 +43,3 @@ class ProductValidateSerializer(serializers.Serializer):
     def validate_title(self, title):
         if Product.objects.filter(title=title):
             raise ValidationError("This product already exist!")
-
