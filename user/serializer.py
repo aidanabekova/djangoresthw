@@ -18,4 +18,4 @@ class UserRegisterValidateSerializer(serializers.Serializer):
     #         if ord(i) >= 1040 and ord(i) <= 1103:  # проверка на русский язык
     #             raise ValidationError('Please use english only!')
     #     return username
-#
+

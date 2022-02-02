@@ -5,7 +5,6 @@ from rest_framework.response import Response
 from rest_framework import status, permissions
 from .serializer import ProductSerializer, ReviewSerializer, TagSerializer, ProductValidateSerializer
 from .models import Product, Review, Tag
-
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from main.models import Product
 from main.serializer import ProductSerializer

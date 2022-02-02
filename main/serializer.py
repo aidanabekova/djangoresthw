@@ -23,15 +23,12 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ['id', 'title', 'description', 'price', 'tags', 'reviews']
-    def create(self, validated_data):
 
+    def create(self, validated_data):
         return Product.objects.create(**validated_data)
-    def validated_data(self):
 
     def get_tags(self, product):
-
         return TagSerializer(product.tags.filter(is_active=True), many=True).data
-
 
 
 class ProductValidateSerializer(serializers.Serializer):
